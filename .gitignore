@@ -1,0 +1,11 @@
+# 打包产物
+*.toolpkg
+
+# 运行时数据（不应入库）
+config.json
+history.json
+debug.log
+
+# 系统杂项
+.DS_Store
+Thumbs.db

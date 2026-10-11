@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "toolpkg_id": "com.operit.chat_reviewer",
+  "version": "0.1.0",
+  "api_version": "1.0.1",
+  "requires": [],
+  "author": ["Lmeng486"],
+  "main": "main.js",
+  "display_name": {
+    "zh": "聊天审查",
+    "en": "Chat Reviewer"
+  },
+  "description": {
+    "zh": "把一个窗口（被审查者）绑定到另一个窗口（审查者）：被审查者 AI 输出结束后自动触发审查者按其角色卡与要求输出审查意见。含独立侧栏面板（绑定窗口/角色卡/审查要求/历史）与手动触发、提示词预览。",
+    "en": "Bind one chat (reviewee) to another (reviewer): when the reviewee's AI finishes a turn, the reviewer automatically produces a review using its own character card and your requirement. Includes a sidebar panel for binding, character cards, requirement, history, manual trigger and prompt preview."
+  },
+  "enabled_by_default": false,
+  "subpackages": [
+    {
+      "id": "chat_reviewer_tools",
+      "entry": "packages/chat_reviewer_tools.js",
+      "enabled_by_default": true,
+      "display_name": {
+        "zh": "聊天审查工具",
+        "en": "Chat Reviewer Tools"
+      },
+      "description": {
+        "zh": "让 AI 可以查询/修改审查绑定、查看审查历史、手动触发一次审查。",
+        "en": "Lets the AI inspect/modify the review binding, read review history, and trigger a review manually."
+      }
+    }
+  ],
+  "resources": []
+}
