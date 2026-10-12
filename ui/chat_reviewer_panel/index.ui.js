@@ -27,18 +27,6 @@ function json(obj) {
     }
 }
 
-/** 本地超时包装：宿主服务未就绪时 Tools.* 可能永久挂起。 */
-function withTimeout(promise, ms, label) {
-    return Promise.race([
-        promise,
-        new Promise(function (resolve, reject) {
-            setTimeout(function () {
-                reject(new Error("timeout after " + ms + "ms: " + (label || "call")));
-            }, ms);
-        })
-    ]);
-}
-
 /* ------------------------------------------------------------------ */
 /* 桥接对象                                                            */
 /* ------------------------------------------------------------------ */
@@ -147,20 +135,6 @@ function buildBridge() {
             }
         },
 
-        // 跳转到审查者窗口（E1）
-        switchToReviewer: async function () {
-            try {
-                var cfg = await core.readConfig();
-                if (!cfg.reviewerChatId) {
-                    return json({ success: false, message: "还没绑定审查者窗口" });
-                }
-                await withTimeout(Tools.Chat.switchTo(cfg.reviewerChatId), 8000, "switchTo");
-                return json({ success: true });
-            } catch (e) {
-                return json({ success: false, message: (e && e.message) ? e.message : String(e) });
-            }
-        },
-
         // 读取调试日志
         loadLog: async function () {
             try {
@@ -245,7 +219,6 @@ function buildPanelHtml() {
         '<label class="f">审查者窗口（谁来审）</label>',
         '<select id="reviewerChat"></select>',
         '<div class="hint">一对一硬绑定：一个被审查窗口只对应一个审查者窗口。</div>',
-        '<div class="row" style="margin-top:10px"><button class="act sec" onclick="jumpReviewer()">⇄ 跳转到审查窗口</button></div>',
         '</div>',
 
         '<div class="card">',
@@ -426,7 +399,6 @@ function buildPanelHtml() {
         '  toast(r.message||(r.success?"完成":"失败"));',
         '  await loadAll();',
         '}',
-        'async function jumpReviewer(){var r=P(await Reviewer.switchToReviewer());toast(r.success?"已跳转":"跳转失败："+(r.message||""));}',
         'async function createCard(){',
         '  var n=document.getElementById("newCardName").value.trim();',
         '  if(!n){toast("请填角色卡名称");return;}',

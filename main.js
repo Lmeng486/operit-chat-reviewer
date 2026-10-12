@@ -16,33 +16,65 @@ var core = require("./core.js");
 var ROUTE_ID = "chat_reviewer_panel";
 var SCREEN_PATH = "ui/chat_reviewer_panel/index.ui.js";
 
-function registerToolPkg() {
-    ToolPkg.registerUiRoute({
-        id: ROUTE_ID,
-        runtime: "compose_dsl",
-        screen: SCREEN_PATH,
-        params: {},
-        title: {
-            zh: "聊天审查",
-            en: "Chat Reviewer"
+function errText(e) {
+    return (e && e.message) ? e.message : String(e);
+}
+
+function logStep(tag, msg) {
+    try {
+        if (typeof console !== "undefined" && console.log) {
+            console.log("[chat_reviewer] registerToolPkg " + tag + ": " + msg);
         }
-    });
+    } catch (e) { /* ignore */ }
+}
 
-    ToolPkg.registerNavigationEntry({
-        id: "chat_reviewer_sidebar_entry",
-        route: "toolpkg:com.operit.chat_reviewer:ui:" + ROUTE_ID,
-        surface: "main_sidebar_plugins",
-        title: {
-            zh: "聊天审查",
-            en: "Chat Reviewer"
-        },
-        order: 10
-    });
+function registerToolPkg() {
+    logStep("start", "entered");
 
-    ToolPkg.registerChatMessageHook({
-        id: "chat_reviewer_message_hook",
-        function: onChatMessage
-    });
+    // ① 聊天消息 Hook：被审查者 AI 输出后触发审查
+    try {
+        ToolPkg.registerChatMessageHook({
+            id: "chat_reviewer_message_hook",
+            function: onChatMessage
+        });
+        logStep("ok", "registerChatMessageHook");
+    } catch (e) {
+        logStep("FAIL", "registerChatMessageHook: " + errText(e));
+    }
+
+    // ② 侧栏面板 UI route（screen 必须传字符串路径）
+    try {
+        ToolPkg.registerUiRoute({
+            id: ROUTE_ID,
+            runtime: "compose_dsl",
+            screen: SCREEN_PATH,
+            params: {},
+            title: {
+                zh: "聊天审查",
+                en: "Chat Reviewer"
+            }
+        });
+        logStep("ok", "registerUiRoute");
+    } catch (e) {
+        logStep("FAIL", "registerUiRoute: " + errText(e));
+    }
+
+    // ③ 侧栏导航入口
+    try {
+        ToolPkg.registerNavigationEntry({
+            id: "chat_reviewer_sidebar_entry",
+            route: "toolpkg:com.operit.chat_reviewer:ui:" + ROUTE_ID,
+            surface: "main_sidebar_plugins",
+            title: {
+                zh: "聊天审查",
+                en: "Chat Reviewer"
+            },
+            order: 10
+        });
+        logStep("ok", "registerNavigationEntry");
+    } catch (e) {
+        logStep("FAIL", "registerNavigationEntry: " + errText(e));
+    }
 
     return true;
 }

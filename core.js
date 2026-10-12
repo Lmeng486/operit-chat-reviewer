@@ -93,7 +93,8 @@ function pathOf(name) {
 }
 
 async function ensureDir() {
-    try { await Tools.Files.createDirectory(configDir()); } catch (e) { /* 已存在 */ }
+    // 注意：Tools.Files 没有 createDirectory，只有 mkdir(path, create_parents?, env?)
+    try { await Tools.Files.mkdir(configDir(), true); } catch (e) { /* 已存在 */ }
 }
 
 async function readJson(name, fallback) {
@@ -626,6 +627,7 @@ async function listCandidateChats() {
                 id: c.id,
                 title: c.title || "(未命名)",
                 isCurrent: !!c.isCurrent,
+                cardId: c.characterCardId || "",
                 cardName: c.characterCardName || "",
                 updatedAt: c.updatedAt || 0
             });
